@@ -971,44 +971,57 @@
 
     // ============ INICIALIZAÇÃO DOS GRÁFICOS ============
     function initCharts() {
-    // Gráfico Tela 1
-    const ctx1 = document.getElementById('chartComparativo').getContext('2d');
-    chartComparativo = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
-            datasets: [
-                {                        
-                    label: 'Matrículas',
-                    data: [7, 21],
-                    backgroundColor: ['#1a237e', '#e67e22'],
-                    borderRadius: 6,
-                    barPercentage: 0.4
-                }                   
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                datalabels: {
-                    color: '#000',
-                    font: { 
-                        weight: 'bold', 
-                        size: 16
-                    },
-                    anchor: 'end',
-                    align: 'end',
-                    offset: 20,
-                    formatter: function(value) {
-                        return value > 0 ? value : '';
-                    }
+// Gráfico Tela 1
+const ctx1 = document.getElementById('chartComparativo').getContext('2d');
+chartComparativo = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
+        datasets: [
+            {                        
+                label: 'Matrículas',
+                data: [7, 21],
+                backgroundColor: ['#1a237e', '#e67e22'],
+                borderRadius: 6,
+                barPercentage: 0.4
+            }                   
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            datalabels: {
+                color: '#000',
+                font: { 
+                    weight: 'bold', 
+                    size: 16
+                },
+                anchor: 'end',
+                align: 'end',
+                offset: 20,
+                formatter: function(value) {
+                    return value > 0 ? value : '';
                 }
-                // ============ BLOCO LEGEND FOI REMOVIDO ============
-            },            
+            },
+            // ============ BLOCO RESPONSÁVEL POR REMOVER A LEGENDA ============
+            legend: {
+                display: false
+            }
         },
-        plugins: [ChartDataLabels]
-    });
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { font: { size: 12 } },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
         // Gráfico Evolução A
         const ctx2 = document.getElementById('chartEvolucaoA').getContext('2d');
         chartEvolA = new Chart(ctx2, {
