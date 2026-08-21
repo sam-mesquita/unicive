@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Acompanhamento Cursos EAD (Editável)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
         * {
             margin: 0;
@@ -970,45 +971,62 @@
 
     // ============ INICIALIZAÇÃO DOS GRÁFICOS ============
     function initCharts() {
-        // Gráfico Tela 1
-        const ctx1 = document.getElementById('chartComparativo').getContext('2d');
-        chartComparativo = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
-                datasets: [
-                    {                        
-                        data: [7, 21],
-                        backgroundColor: ['#1a237e', '#e67e22'],
-                        borderRadius: 6,
-                        barPercentage: 0.4
-                    }                   
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            font: { size: 13, weight: '600' },
-                            padding: 20
-                        }
+    // Gráfico Tela 1
+    const ctx1 = document.getElementById('chartComparativo').getContext('2d');
+    chartComparativo = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
+            datasets: [
+                {                        
+                    data: [7, 21],
+                    backgroundColor: ['#1a237e', '#e67e22'],
+                    borderRadius: 6,
+                    barPercentage: 0.4
+                }                   
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                // ============ NOVO: CONFIGURAÇÃO DOS LABELS ============
+                datalabels: {
+                    color: '#fff',              // Cor do texto (branco)
+                    font: { 
+                        weight: 'bold', 
+                        size: 16               // Tamanho da fonte
+                    },
+                    anchor: 'end',              // Fixa no topo da barra
+                    align: 'end',               // Alinha no final
+                    offset: -10,                // Distância da barra (negativo = dentro)
+                    formatter: function(value) {
+                        return value > 0 ? value : ''; // Só mostra se > 0
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { font: { size: 12 } },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
-                    },
-                    x: {
-                        grid: { display: false }
+                // ============ FIM DA NOVIDADE ============
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { size: 13, weight: '600' },
+                        padding: 20
                     }
                 }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { font: { size: 12 } },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    grid: { display: false }
+                }
             }
-        });
+        },
+        // ============ NOVO: REGISTRA O PLUGIN ============
+        plugins: [ChartDataLabels]
+    });
 
         // Gráfico Evolução A
         const ctx2 = document.getElementById('chartEvolucaoA').getContext('2d');
