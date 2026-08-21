@@ -605,77 +605,7 @@
             <div class="value" id="cardTotalMat">28</div>
             <div class="sub">Meta combinada: <strong id="cardMetaTotal">60</strong> | Atingimento: <strong id="cardPctTotal" style="color:#e74c3c;">47%</strong></div>
         </div>
-    </div>
-
-    <!-- ==================== NOVO QUADRO DE FEEDBACKS ==================== -->
-    <div class="cards-grid">
-        <div class="card feedback-card" style="border-left: 5px solid #8e44ad; grid-column: span 4;">
-            <div class="label" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                💬 Observações e Feedbacks dos Gestores de Regional
-                <span style="font-size: 11px; background: #8e44ad; color: white; padding: 2px 12px; border-radius: 20px; font-weight: 400;">Última atualização: <span id="dataFeedback">21/08/2026</span></span>
-            </div>
-            
-            <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <!-- Coluna 1 - Feedbacks Positivos -->
-                <div style="background: #f0fdf4; border-radius: 8px; padding: 12px 16px; border-left: 3px solid #27ae60;">
-                    <div style="font-size: 12px; font-weight: 700; color: #27ae60; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">✅ Pontos Positivos</div>
-                    <ul id="feedbacksPositivos" style="list-style: none; font-size: 14px; color: #333; line-height: 1.6;">
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #27ae60; font-weight: 700;">•</span>
-                            <span><strong>Regional Centro:</strong> "Avaliação do curso pelos alunos...."</span>
-                        </li>
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #27ae60; font-weight: 700;">•</span>
-                            <span><strong>Regional Sul:</strong> "Matrículas após o lançamento....."</span>
-                        </li>
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #27ae60; font-weight: 700;">•</span>
-                            <span><strong>Regional Leste:</strong> "Demanda por cursos de IA....."</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Coluna 2 - Feedbacks Negativos / Melhorias -->
-                <div style="background: #fef2f2; border-radius: 8px; padding: 12px 16px; border-left: 3px solid #e74c3c;">
-                    <div style="font-size: 12px; font-weight: 700; color: #e74c3c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">⚠️ Pontos de Atenção</div>
-                    <ul id="feedbacksAtencao" style="list-style: none; font-size: 14px; color: #333; line-height: 1.6;">
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #e74c3c; font-weight: 700;">•</span>
-                            <span><strong>Regional Norte:</strong> "Valor do curso está acima do que o mercado local pratica."</span>
-                        </li>
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #e74c3c; font-weight: 700;">•</span>
-                            <span><strong>Regional Nordeste:</strong> ".........................."</span>
-                        </li>
-                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
-                            <span style="color: #e74c3c; font-weight: 700;">•</span>
-                            <span><strong>Regional Sudeste:</strong> "........................ "</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Rodapé com resumo executivo -->
-            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <span style="font-size: 13px; color: #555;">
-                        <span style="font-weight: 700; color: #27ae60;" id="totalPositivos">3</span> Regionals com feedback positivo
-                    </span>
-                    <span style="font-size: 13px; color: #555;">
-                        <span style="font-weight: 700; color: #e74c3c;" id="totalAtencao">3</span> Regionals com pontos de atenção
-                    </span>
-                    <span style="font-size: 13px; color: #555;">
-                        <span style="font-weight: 700; color: #f1c40f;" id="totalSemRetorno">1</span> Regional sem retorno
-                    </span>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="editarFeedbacks()" style="background: #8e44ad; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.3s;">
-                        ✏️ Editar Feedbacks
-                    </button>
-                    <button onclick="exportarFeedbacks()" style="background: #1a237e; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.3s;">
-                        📤 Exportar
-                    </button>
-                </div>
+    </div>            
             </div>
         </div>
     </div>
