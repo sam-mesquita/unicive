@@ -971,7 +971,7 @@
 
     // ============ INICIALIZAÇÃO DOS GRÁFICOS ============
     function initCharts() {
-    // Gráfico Tela 1
+       // Gráfico Tela 1
     const ctx1 = document.getElementById('chartComparativo').getContext('2d');
     chartComparativo = new Chart(ctx1, {
         type: 'bar',
@@ -979,6 +979,7 @@
             labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
             datasets: [
                 {                        
+                    label: 'Matrículas',
                     data: [7, 21],
                     backgroundColor: ['#1a237e', '#e67e22'],
                     borderRadius: 6,
@@ -988,24 +989,22 @@
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
             plugins: {
-                // ============ NOVO: CONFIGURAÇÃO DOS LABELS ============
                 datalabels: {
-                    color: '#000',              // Cor do texto (preto)
+                    color: '#000',
                     font: { 
                         weight: 'bold', 
-                        size: 16               // Tamanho da fonte
+                        size: 16
                     },
-                    anchor: 'end',              // Fixa no topo da barra
-                    align: 'end',               // Alinha no final
-                    offset: 20,                // Distância da barra (negativo = dentro)
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 20,
                     formatter: function(value) {
-                        return value > 0 ? value : ''; // Só mostra se > 0
+                        return value > 0 ? value : '';
                     }
-                },
-                // ============ FIM DA NOVIDADE ============
-
+                }
+                // ============ BLOCO LEGEND FOI REMOVIDO ============
             },
             scales: {
                 y: {
@@ -1018,10 +1017,8 @@
                 }
             }
         },
-        // ============ NOVO: REGISTRA O PLUGIN ============
         plugins: [ChartDataLabels]
     });
-
         // Gráfico Evolução A
         const ctx2 = document.getElementById('chartEvolucaoA').getContext('2d');
         chartEvolA = new Chart(ctx2, {
