@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Acompanhamento Cursos EAD (Editável)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header-info span {
+            background: rgba(255,255,255,0.15);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Painel de Controle (Inputs) */
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #e8eaf6;
+        }
+
+        .control-panel h3 {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-panel h3 small {
+            font-weight: 400;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #1a237e;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+
+        .input-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .input-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .btn-atualizar {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 5px;
+            align-self: flex-end;
+        }
+
+        .btn-atualizar:hover {
+            background: #0d47a1;
+        }
+
+        /* Navegação por Abas */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 28px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: #f0f2f5;
+        }
+
+        .tab-btn.active {
+            background: #1a237e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3);
+        }
+
+        .tab-btn .badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 1px 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tab-btn.active .badge {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Conteúdo das Telas */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TELA 1 - Cards e Gráfico */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+        }
+
+        .card .label {
+            font-size: 13px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a237e;
+            margin: 8px 0 4px 0;
+        }
+
+        .card .sub {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .card .sub strong {
+            color: #1a237e;
+        }
+
+        .card.curso-a {
+            border-left: 5px solid #1a237e;
+        }
+
+        .card.curso-b {
+            border-left: 5px solid #e67e22;
+        }
+
+        .card.total {
+            border-left: 5px solid #27ae60;
+        }
+
+        .card.destaque {
+            border-left: 5px solid #8e44ad;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chart-wrapper h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        /* TELA 2 - Evolução Mensal */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            padding: 10px 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chart-box h4 {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-box .chart-container {
+            height: 280px;
+        }
+
+        /* TELA 3 - Ranking */
+        .ranking-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .ranking-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ranking-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .ranking-table .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .ranking-table .header-title h3 {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .ranking-table .header-title .total-mat {
+            font-size: 13px;
+            color: #888;
+            background: #f0f2f5;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        .ranking-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ranking-table th {
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 10px 8px 8px 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ranking-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .ranking-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ranking-table .pos {
+            font-weight: 700;
+            color: #999;
+            width: 30px;
+            text-align: center;
+        }
+
+        .ranking-table .pos.gold {
+            color: #f1c40f;
+        }
+        .ranking-table .pos.silver {
+            color: #bdc3c7;
+        }
+        .ranking-table .pos.bronze {
+            color: #e67e22;
+        }
+
+        .ranking-table .polo-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .ranking-table .matriculas {
+            font-weight: 600;
+            color: #1a237e;
+            text-align: center;
+        }
+
+        .ranking-table .status {
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-badge.acima {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.na-meta {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.abaixo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 12px;
+            padding: 15px;
+        }
+
+        .tab-content {
+            scroll-margin-top: 20px;
+        }
+
+        /* Inputs de edição rápida nos cards */
+        .edit-input {
+            display: inline-block;
+            width: 80px;
+            padding: 2px 6px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a237e;
+            background: #f8f9ff;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .edit-input:focus {
+            outline: none;
+            border-color: #1a237e;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+        }
+
+        .edit-input-small {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>📊 Acompanhamento Cursos EAD</h1>
+        <div class="header-info">
+            <span>📅 Lançamento: 01/06/2026</span>
+            <span>📌 Período: Jun - Ago 2026</span>
+            <span>🔄 Atualizado: <span id="dataAtualizacao">21/08/2026</span></span>
+        </div>
+    </div>
+
+    <!-- PAINEL DE CONTROLE COM INPUTS -->
+    <div class="control-panel">
+        <h3>
+            ✏️ Painel de Edição de Dados
+            <small>— Altere os valores e clique em "Atualizar Dashboard"</small>
+        </h3>
+        <div class="inputs-grid">
+            <!-- Engenharia de Prompt -->
+            <div class="input-group">
+                <label>🎓 Engenharia de Prompt - Matrículas</label>
+                <input type="number" id="matA" value="7" min="0">
+            </div>
+            <div class="input-group">
+                <label>🎯 Engenharia de Prompt - Meta</label>
+                <input type="number" id="metaA" value="30" min="0">
+            </div>
+            <div class="input-group">
+                <label>💰 Engenharia de Prompt - Ticket Médio (R$)</label>
+                <input type="number" id="ticketA" value="350" min="0" step="0.01">
+            </div>
+            <!-- Engenharia de Agentes de IA -->
+            <div class="input-group">
+                <label>🎓 Engenharia de Agentes de IA - Matrículas</label>
+                <input type="number" id="matB" value="21" min="0">
+            </div>
+            <div class="input-group">
+                <label>🎯 Engenharia de Agentes de IA - Meta</label>
+                <input type="number" id="metaB" value="30" min="0">
+            </div>
+            <div class="input-group">
+                <label>💰 Engenharia de Agentes de IA - Ticket Médio (R$)</label>
+                <input type="number" id="ticketB" value="260" min="0" step="0.01">
+            </div>
+            <!-- Evolução Mensal Engenharia de Prompt -->
+            <div class="input-group">
+                <label>📈 Engenharia de Prompt - Junho</label>
+                <input type="number" id="evolA1" value="0" min="0">
+            </div>
+            <div class="input-group">
+                <label>📈 Engenharia de Prompt - Julho</label>
+                <input type="number" id="evolA2" value="0" min="0">
+            </div>
+            <div class="input-group">
+                <label>📈 Engenharia de Prompt - Agosto</label>
+                <input type="number" id="evolA3" value="7" min="0">
+            </div>
+            <!-- Evolução Mensal Engenharia de Agentes de IA -->
+            <div class="input-group">
+                <label>📈 Engenharia de Agentes de IA - Junho</label>
+                <input type="number" id="evolB1" value="0" min="0">
+            </div>
+            <div class="input-group">
+                <label>📈 Engenharia de Agentes de IA - Julho</label>
+                <input type="number" id="evolB2" value="0" min="0">
+            </div>
+            <div class="input-group">
+                <label>📈 Engenharia de Agentes de IA - Agosto</label>
+                <input type="number" id="evolB3" value="21" min="0">
+            </div>
+            <div class="input-group" style="justify-content: flex-end;">
+                <button class="btn-atualizar" onclick="atualizarDashboard()">🔄 Atualizar Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABAS DE NAVEGAÇÃO -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab1">
+            📊 Visão Geral
+            <span class="badge">2 cursos</span>
+        </button>
+        <button class="tab-btn" data-tab="tab2">
+            📈 Evolução Mensal
+        </button>
+        <button class="tab-btn" data-tab="tab3">
+            🏆 Matrículas por Regional
+        </button>
+    </div>
+
+    <!-- ======================== TELA 1 ======================== -->
+<!-- TELA 1 - VISÃO GERAL (com novo quadro de feedbacks) -->
+<div id="tab1" class="tab-content active">
+    <!-- CARDS EXISTENTES -->
+    <div class="cards-grid">
+        <div class="card curso-a">
+            <div class="label">🎓 Engenharia de Prompt</div>
+            <div class="value" id="cardMatA">7</div>
+            <div class="sub">Meta: <strong id="cardMetaA">30</strong> | Atingimento: <strong id="cardPctA" style="color:#e74c3c;">23%</strong></div>
+        </div>
+        <div class="card curso-b">
+            <div class="label">🎓 Engenharia de Agentes de IA</div>
+            <div class="value" id="cardMatB">21</div>
+            <div class="sub">Meta: <strong id="cardMetaB">30</strong> | Atingimento: <strong id="cardPctB" style="color:#e74c3c;">70%</strong></div>
+        </div>
+        <div class="card total">
+            <div class="label">💰 Ticket Médio Geral</div>
+            <div class="value" id="cardTicketGeral">R$ 282,61</div>
+            <div class="sub">Curso A: R$ <span id="cardTicketA">350</span> | Curso B: R$ <span id="cardTicketB">260</span></div>
+        </div>
+        <div class="card destaque">
+            <div class="label">📊 Total de Matrículas</div>
+            <div class="value" id="cardTotalMat">28</div>
+            <div class="sub">Meta combinada: <strong id="cardMetaTotal">60</strong> | Atingimento: <strong id="cardPctTotal" style="color:#e74c3c;">47%</strong></div>
+        </div>
+    </div>
+
+    <!-- ==================== NOVO QUADRO DE FEEDBACKS ==================== -->
+    <div class="cards-grid">
+        <div class="card feedback-card" style="border-left: 5px solid #8e44ad; grid-column: span 4;">
+            <div class="label" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                💬 Observações e Feedbacks dos Gestores de Polo
+                <span style="font-size: 11px; background: #8e44ad; color: white; padding: 2px 12px; border-radius: 20px; font-weight: 400;">Última atualização: <span id="dataFeedback">21/08/2026</span></span>
+            </div>
+            
+            <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- Coluna 1 - Feedbacks Positivos -->
+                <div style="background: #f0fdf4; border-radius: 8px; padding: 12px 16px; border-left: 3px solid #27ae60;">
+                    <div style="font-size: 12px; font-weight: 700; color: #27ae60; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">✅ Pontos Positivos</div>
+                    <ul id="feedbacksPositivos" style="list-style: none; font-size: 14px; color: #333; line-height: 1.6;">
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #27ae60; font-weight: 700;">•</span>
+                            <span><strong>Polo Centro:</strong> "Curso muito bem avaliado pelos alunos. Conteúdo atual e relevante. Sugiro investir em mais divulgação local."</span>
+                        </li>
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #27ae60; font-weight: 700;">•</span>
+                            <span><strong>Polo Sul:</strong> "As matrículas cresceram 30% após o lançamento. Os alunos elogiam a plataforma EAD."</span>
+                        </li>
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #27ae60; font-weight: 700;">•</span>
+                            <span><strong>Polo Leste:</strong> "Demanda reprimida por cursos de IA. Potencial de crescimento se fizermos parcerias com empresas locais."</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Coluna 2 - Feedbacks Negativos / Melhorias -->
+                <div style="background: #fef2f2; border-radius: 8px; padding: 12px 16px; border-left: 3px solid #e74c3c;">
+                    <div style="font-size: 12px; font-weight: 700; color: #e74c3c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">⚠️ Pontos de Atenção</div>
+                    <ul id="feedbacksAtencao" style="list-style: none; font-size: 14px; color: #333; line-height: 1.6;">
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #e74c3c; font-weight: 700;">•</span>
+                            <span><strong>Polo Norte:</strong> "Zero matrículas até o momento. Equipe precisa de treinamento em vendas e divulgação do curso."</span>
+                        </li>
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #e74c3c; font-weight: 700;">•</span>
+                            <span><strong>Polo Nordeste:</strong> "Alunos reclamam do material didático - consideram muito teórico. Sugerem mais cases práticos."</span>
+                        </li>
+                        <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                            <span style="color: #e74c3c; font-weight: 700;">•</span>
+                            <span><strong>Polo Sudeste:</strong> "Dificuldade em fechar turmas. Valor do curso está acima do que o mercado local pratica."</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Rodapé com resumo executivo -->
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <span style="font-size: 13px; color: #555;">
+                        <span style="font-weight: 700; color: #27ae60;" id="totalPositivos">3</span> polos com feedback positivo
+                    </span>
+                    <span style="font-size: 13px; color: #555;">
+                        <span style="font-weight: 700; color: #e74c3c;" id="totalAtencao">3</span> polos com pontos de atenção
+                    </span>
+                    <span style="font-size: 13px; color: #555;">
+                        <span style="font-weight: 700; color: #f1c40f;" id="totalSemRetorno">1</span> polo sem retorno
+                    </span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="editarFeedbacks()" style="background: #8e44ad; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.3s;">
+                        ✏️ Editar Feedbacks
+                    </button>
+                    <button onclick="exportarFeedbacks()" style="background: #1a237e; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.3s;">
+                        📤 Exportar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICO DE BARRAS COMPARATIVO (permanece igual) -->
+    <div class="chart-wrapper">
+        <h3>📊 Comparativo: Matrículas Totais x Meta</h3>
+        <div class="chart-container">
+            <canvas id="chartComparativo"></canvas>
+        </div>
+    </div>
+</div>
+
+    <!-- ======================== TELA 2 ======================== -->
+    <div id="tab2" class="tab-content">
+        <div class="chart-row">
+            <div class="chart-box">
+                <h4>📈 Engenharia de Prompt - Evolução Mensal</h4>
+                <div class="chart-container">
+                    <canvas id="chartEvolucaoA"></canvas>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h4>📈 Engenharia de Agentes de IA - Evolução Mensal</h4>
+                <div class="chart-container">
+                    <canvas id="chartEvolucaoB"></canvas>
+                </div>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:20px;">
+            <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px; text-transform:uppercase;">Engenharia de Prompt - Variação</span>
+                <div style="font-size:20px; font-weight:700; color:#27ae60;" id="varA">+∞%</div>
+                <span style="font-size:13px; color:#666;">Jun (0) → Ago (7)</span>
+            </div>
+            <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px; text-transform:uppercase;">Engenharia de Agentes de IA - Variação</span>
+                <div style="font-size:20px; font-weight:700; color:#27ae60;" id="varB">+∞%</div>
+                <span style="font-size:13px; color:#666;">Jun (0) → Ago (21)</span>
+            </div>
+            <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px; text-transform:uppercase;">Total de Matrículas</span>
+                <div style="font-size:20px; font-weight:700; color:#1a237e;" id="totalMatEvol">28</div>
+                <span style="font-size:13px; color:#666;">Agosto</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== TELA 3 ======================== -->
+    <div id="tab3" class="tab-content">
+        <div style="display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap;">
+            <div style="background:white; border-radius:12px; padding:12px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px;">🏆 Polo Destaque</span>
+                <div style="font-weight:700; color:#1a237e;">Polo Centro</div>
+                <span style="font-size:13px; color:#27ae60;">142 matrículas</span>
+            </div>
+            <div style="background:white; border-radius:12px; padding:12px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px;">⚠️ Regional menos matrículas</span>
+                <div style="font-weight:700; color:#e74c3c;">Regional X</div>
+                <span style="font-size:13px; color:#e74c3c;">0 matrículas</span>
+            </div>
+            <div style="background:white; border-radius:12px; padding:12px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <span style="color:#888; font-size:12px;">📌 Total de Regionais</span>
+                <div style="font-weight:700; color:#1a237e;">8</div>
+            </div>
+        </div>
+
+        <div class="ranking-container">
+            <!-- RANKING Engenharia de Prompt -->
+            <div class="ranking-table">
+                <div class="header-title">
+                    <h3>🏅 Engenharia de Prompt - Matrícula por Regional</h3>
+                    <span class="total-mat">Total: <span id="rankTotalA">7</span> matrículas</span>
+                </div>
+                <table id="rankTableA">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Regional</th>
+                            <th style="text-align:center;">Matrículas</th>
+                            <th style="text-align:center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankBodyA">
+                        <!-- Gerado via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RANKING Engenharia de Agentes de IA -->
+            <div class="ranking-table">
+                <div class="header-title">
+                    <h3>🏅 Engenharia de Agentes de IA - Matrícula por Regional</h3>
+                    <span class="total-mat">Total: <span id="rankTotalB">21</span> matrículas</span>
+                </div>
+                <table id="rankTableB">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Regional</th>
+                            <th style="text-align:center;">Matrículas</th>
+                            <th style="text-align:center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankBodyB">
+                        <!-- Gerado via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Legenda de Status -->
+        <div style="background:white; border-radius:12px; padding:15px 20px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; gap:25px; flex-wrap:wrap; justify-content:center;">
+            <span><span class="status-badge acima" style="background:#d4edda; color:#155724;">Acima da meta</span> ≥ 100%</span>
+            <span><span class="status-badge na-meta" style="background:#fff3cd; color:#856404;">Na meta</span> 80% - 99%</span>
+            <span><span class="status-badge abaixo" style="background:#f8d7da; color:#721c24;">Abaixo da meta</span> &lt; 80%</span>
+            <span style="color:#888; font-size:13px;">📌 Meta individual por polo: 20 matrículas/mês</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        Dashboard gerado em 21/08/2026 | Dados sujeitos à validação | Versão 2.0 - Editável
+    </div>
+</div>
+
+<script>
+    // ============ VARIÁVEIS GLOBAIS DOS GRÁFICOS ============
+    let chartComparativo, chartEvolA, chartEvolB;
+
+    // ============ DADOS DOS POLOS ============
+    const polos = ['Polo Centro', 'Polo Sul', 'Polo Leste', 'Polo Oeste', 'Polo Norte', 'Polo Nordeste', 'Polo Sudeste'];
+    const metaPolo = 20;
+
+    // ============ FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO ============
+    function atualizarDashboard() {
+        // Lê os valores dos inputs
+        const matA = parseInt(document.getElementById('matA').value) || 0;
+        const metaA = parseInt(document.getElementById('metaA').value) || 1;
+        const ticketA = parseFloat(document.getElementById('ticketA').value) || 0;
+        const matB = parseInt(document.getElementById('matB').value) || 0;
+        const metaB = parseInt(document.getElementById('metaB').value) || 1;
+        const ticketB = parseFloat(document.getElementById('ticketB').value) || 0;
+
+        const evolA1 = parseInt(document.getElementById('evolA1').value) || 0;
+        const evolA2 = parseInt(document.getElementById('evolA2').value) || 0;
+        const evolA3 = parseInt(document.getElementById('evolA3').value) || 0;
+        const evolB1 = parseInt(document.getElementById('evolB1').value) || 0;
+        const evolB2 = parseInt(document.getElementById('evolB2').value) || 0;
+        const evolB3 = parseInt(document.getElementById('evolB3').value) || 0;
+
+        // ============ ATUALIZA CARDS TELA 1 ============
+        const pctA = Math.round((matA / metaA) * 100);
+        const pctB = Math.round((matB / metaB) * 100);
+        const totalMat = matA + matB;
+        const metaTotal = metaA + metaB;
+        const pctTotal = Math.round((totalMat / metaTotal) * 100);
+        const ticketGeral = totalMat > 0 ? ((ticketA * matA) + (ticketB * matB)) / totalMat : 0;
+
+        document.getElementById('cardMatA').textContent = matA;
+        document.getElementById('cardMetaA').textContent = metaA;
+        document.getElementById('cardPctA').textContent = pctA + '%';
+        document.getElementById('cardPctA').style.color = pctA >= 80 ? '#27ae60' : pctA >= 50 ? '#f1c40f' : '#e74c3c';
+
+        document.getElementById('cardMatB').textContent = matB;
+        document.getElementById('cardMetaB').textContent = metaB;
+        document.getElementById('cardPctB').textContent = pctB + '%';
+        document.getElementById('cardPctB').style.color = pctB >= 80 ? '#27ae60' : pctB >= 50 ? '#f1c40f' : '#e74c3c';
+
+        document.getElementById('cardTotalMat').textContent = totalMat;
+        document.getElementById('cardMetaTotal').textContent = metaTotal;
+        document.getElementById('cardPctTotal').textContent = pctTotal + '%';
+        document.getElementById('cardPctTotal').style.color = pctTotal >= 80 ? '#27ae60' : pctTotal >= 50 ? '#f1c40f' : '#e74c3c';
+
+        document.getElementById('cardTicketA').textContent = ticketA.toFixed(2);
+        document.getElementById('cardTicketB').textContent = ticketB.toFixed(2);
+        document.getElementById('cardTicketGeral').textContent = 'R$ ' + ticketGeral.toFixed(2);
+
+        // ============ ATUALIZA GRÁFICO TELA 1 ============
+        if (chartComparativo) {
+            chartComparativo.data.datasets[0].data = [matA, matB];
+            chartComparativo.data.datasets[1].data = [metaA, metaB];
+            chartComparativo.update();
+        }
+
+        // ============ ATUALIZA GRÁFICOS TELA 2 ============
+        const evolA = [evolA1, evolA2, evolA3];
+        const evolB = [evolB1, evolB2, evolB3];
+
+        if (chartEvolA) {
+            chartEvolA.data.datasets[0].data = evolA;
+            chartEvolA.update();
+        }
+
+        if (chartEvolB) {
+            chartEvolB.data.datasets[0].data = evolB;
+            chartEvolB.update();
+        }
+
+        // ============ ATUALIZA VARIAÇÃO TELA 2 ============
+        const varA = evolA1 > 0 ? Math.round(((evolA3 - evolA1) / evolA1) * 100) : (evolA3 > 0 ? 999 : 0);
+        const varB = evolB1 > 0 ? Math.round(((evolB3 - evolB1) / evolB1) * 100) : (evolB3 > 0 ? 999 : 0);
+
+        document.getElementById('varA').textContent = varA === 999 ? '+∞%' : (varA >= 0 ? '+' + varA : varA) + '%';
+        document.getElementById('varA').style.color = varA >= 0 ? '#27ae60' : '#e74c3c';
+        document.getElementById('varB').textContent = varB === 999 ? '+∞%' : (varB >= 0 ? '+' + varB : varB) + '%';
+        document.getElementById('varB').style.color = varB >= 0 ? '#27ae60' : '#e74c3c';
+        document.getElementById('totalMatEvol').textContent = evolA3 + evolB3;
+
+        // ============ ATUALIZA RANKING TELA 3 ============
+        // Distribui as matrículas pelos polos (exemplo: distribuição proporcional)
+        const distA = distribuirMatriculas(matA, polos.length);
+        const distB = distribuirMatriculas(matB, polos.length);
+
+        atualizarRanking('rankBodyA', 'rankTotalA', polos, distA, metaPolo);
+        atualizarRanking('rankBodyB', 'rankTotalB', polos, distB, metaPolo);
+
+        // Atualiza data
+        const hoje = new Date();
+        document.getElementById('dataAtualizacao').textContent = 
+            hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    // ============ FUNÇÃO PARA DISTRIBUIR MATRÍCULAS ============
+    function distribuirMatriculas(total, numPolos) {
+        const distribuicao = [];
+        let restante = total;
+        for (let i = 0; i < numPolos; i++) {
+            if (i === numPolos - 1) {
+                distribuicao.push(restante);
+            } else {
+                const parte = Math.floor(restante / (numPolos - i));
+                // Varia aleatoriamente para não ficar tudo igual
+                const variacao = Math.floor(Math.random() * 3) - 1;
+                const valor = Math.max(0, parte + variacao);
+                distribuicao.push(valor);
+                restante -= valor;
+            }
+        }
+        // Garante que o total seja exato
+        const soma = distribuicao.reduce((a, b) => a + b, 0);
+        if (soma !== total && total > 0) {
+            distribuicao[distribuicao.length - 1] += (total - soma);
+        }
+        return distribuicao;
+    }
+
+    // ============ FUNÇÃO PARA ATUALIZAR RANKING ============
+    function atualizarRanking(bodyId, totalId, polos, dados, meta) {
+        const tbody = document.getElementById(bodyId);
+        const totalSpan = document.getElementById(totalId);
+        
+        // Ordena polos por número de matrículas (decrescente)
+        const ranking = polos.map((polo, index) => ({
+            nome: polo,
+            mat: dados[index] || 0,
+            index: index
+        })).sort((a, b) => b.mat - a.mat);
+
+        const total = ranking.reduce((sum, r) => sum + r.mat, 0);
+        totalSpan.textContent = total;
+
+        // Gera as linhas da tabela
+        let html = '';
+        ranking.forEach((item, pos) => {
+            const pct = meta > 0 ? Math.round((item.mat / meta) * 100) : 0;
+            let statusClass, statusText;
+            if (pct >= 100) {
+                statusClass = 'acima';
+                statusText = 'Acima da meta';
+            } else if (pct >= 80) {
+                statusClass = 'na-meta';
+                statusText = 'Na meta';
+            } else {
+                statusClass = 'abaixo';
+                statusText = 'Abaixo da meta';
+            }
+
+            const medalha = pos === 0 ? '🥇' : pos === 1 ? '🥈' : pos === 2 ? '🥉' : (pos + 1);
+            const posClass = pos === 0 ? 'gold' : pos === 1 ? 'silver' : pos === 2 ? 'bronze' : '';
+
+            html += `
+                <tr>
+                    <td class="pos ${posClass}">${medalha}</td>
+                    <td class="polo-name">${item.nome}</td>
+                    <td class="matriculas">${item.mat}</td>
+                    <td class="status"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // ============ INICIALIZAÇÃO DOS GRÁFICOS ============
+    function initCharts() {
+        // Gráfico Tela 1
+        const ctx1 = document.getElementById('chartComparativo').getContext('2d');
+        chartComparativo = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Engenharia de Prompt', 'Engenharia de Agentes de IA'],
+                datasets: [
+                    {
+                        label: 'Matrículas Totais',
+                        data: [7, 21],
+                        backgroundColor: ['#1a237e', '#e67e22'],
+                        borderRadius: 6,
+                        barPercentage: 0.4
+                    },
+                    {
+                        label: 'Meta',
+                        data: [30, 30],
+                        backgroundColor: ['rgba(26, 35, 126, 0.2)', 'rgba(230, 126, 34, 0.2)'],
+                        borderRadius: 6,
+                        borderColor: ['#1a237e', '#e67e22'],
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        barPercentage: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 13, weight: '600' },
+                            padding: 20
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 12 } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Gráfico Evolução A
+        const ctx2 = document.getElementById('chartEvolucaoA').getContext('2d');
+        chartEvolA = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Junho', 'Julho', 'Agosto'],
+                datasets: [{
+                    label: 'Engenharia de Prompt',
+                    data: [0, 0, 7],
+                    borderColor: '#1a237e',
+                    backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#1a237e',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Matrículas: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Gráfico Evolução B
+        const ctx3 = document.getElementById('chartEvolucaoB').getContext('2d');
+        chartEvolB = new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['Junho', 'Julho', 'Agosto'],
+                datasets: [{
+                    label: 'Engenharia de Agentes de IA',
+                    data: [0, 0, 21],
+                    borderColor: '#e67e22',
+                    backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#e67e22',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Matrículas: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // ============ CONTROLE DE ABAS ============
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // ============ INICIALIZA ============
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts();
+        // Inicializa o ranking com dados atuais
+        setTimeout(atualizarDashboard, 100);
+        // Inicializa os contadores de feedbacks
+        setTimeout(atualizarContadoresFeedbacks, 200);
+    });
+
+    // ================================================================
+    // ============ FUNÇÕES PARA FEEDBACKS (ACRESCENTAR AQUI) ============
+    // ================================================================
+
+    // Função para editar feedbacks (abre um modal simples com prompt)
+    function editarFeedbacks() {
+        // Pega os textos atuais
+        const positivos = document.querySelectorAll('#feedbacksPositivos li');
+        const atencao = document.querySelectorAll('#feedbacksAtencao li');
+        
+        let textoPositivos = '';
+        let textoAtencao = '';
+        
+        positivos.forEach(li => {
+            // Pega apenas o texto, removendo o bullet point
+            const span = li.querySelector('span:last-child');
+            textoPositivos += (span ? span.textContent : li.textContent.trim()) + '\n';
+        });
+        
+        atencao.forEach(li => {
+            const span = li.querySelector('span:last-child');
+            textoAtencao += (span ? span.textContent : li.textContent.trim()) + '\n';
+        });
+        
+        // Cria um modal simples com textareas
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center;
+            align-items: center; z-index: 9999;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 12px; padding: 30px; max-width: 800px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <h3 style="margin-bottom: 20px; color: #1a237e; font-size: 20px;">✏️ Editar Feedbacks dos Gestores</h3>
+                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">Digite um feedback por linha. Use o formato: <strong>Polo:</strong> "texto do feedback"</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; color: #27ae60; display: block; margin-bottom: 5px;">✅ Pontos Positivos (um por linha)</label>
+                    <textarea id="editPositivos" style="width: 100%; height: 150px; padding: 12px; border: 2px solid #27ae60; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;">${textoPositivos}</textarea>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #e74c3c; display: block; margin-bottom: 5px;">⚠️ Pontos de Atenção (um por linha)</label>
+                    <textarea id="editAtencao" style="width: 100%; height: 150px; padding: 12px; border: 2px solid #e74c3c; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;">${textoAtencao}</textarea>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px;">
+                    <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="padding: 10px 30px; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; font-weight: 500;">Cancelar</button>
+                    <button onclick="salvarFeedbacks()" style="padding: 10px 30px; border: none; border-radius: 8px; background: #1a237e; color: white; cursor: pointer; font-weight: 600;">💾 Salvar Feedbacks</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+    }
+
+    // Função para salvar feedbacks editados
+    function salvarFeedbacks() {
+        const positivosText = document.getElementById('editPositivos').value.split('\n').filter(line => line.trim() !== '');
+        const atencaoText = document.getElementById('editAtencao').value.split('\n').filter(line => line.trim() !== '');
+        
+        // Atualiza a lista de positivos
+        const listaPositivos = document.getElementById('feedbacksPositivos');
+        listaPositivos.innerHTML = positivosText.map(texto => `
+            <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                <span style="color: #27ae60; font-weight: 700;">•</span>
+                <span>${texto}</span>
+            </li>
+        `).join('');
+        
+        // Atualiza a lista de atenção
+        const listaAtencao = document.getElementById('feedbacksAtencao');
+        listaAtencao.innerHTML = atencaoText.map(texto => `
+            <li style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0;">
+                <span style="color: #e74c3c; font-weight: 700;">•</span>
+                <span>${texto}</span>
+            </li>
+        `).join('');
+        
+        // Atualiza a data
+        const hoje = new Date();
+        const dataFeedback = document.getElementById('dataFeedback');
+        if (dataFeedback) {
+            dataFeedback.textContent = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        
+        // Fecha o modal
+        const modal = document.querySelector('div[style*="position: fixed"]');
+        if (modal) modal.remove();
+        
+        // Atualiza os contadores
+        atualizarContadoresFeedbacks();
+        
+        // Feedback visual de sucesso
+        mostrarToast('✅ Feedbacks salvos com sucesso!');
+    }
+
+    // Função para atualizar contadores
+    function atualizarContadoresFeedbacks() {
+        const totalPos = document.querySelectorAll('#feedbacksPositivos li').length;
+        const totalAten = document.querySelectorAll('#feedbacksAtencao li').length;
+        
+        const elPos = document.getElementById('totalPositivos');
+        const elAten = document.getElementById('totalAtencao');
+        const elSem = document.getElementById('totalSemRetorno');
+        
+        if (elPos) elPos.textContent = totalPos;
+        if (elAten) elAten.textContent = totalAten;
+        if (elSem) elSem.textContent = 8 - totalPos - totalAten;
+    }
+
+    // Função para exportar feedbacks
+    function exportarFeedbacks() {
+        const positivos = document.querySelectorAll('#feedbacksPositivos li span:last-child');
+        const atencao = document.querySelectorAll('#feedbacksAtencao li span:last-child');
+        
+        let texto = '========================================\n';
+        texto += '   FEEDBACKS DOS GESTORES DE POLO\n';
+        texto += '========================================\n';
+        texto += `Data: ${document.getElementById('dataFeedback').textContent}\n\n`;
+        
+        texto += '✅ PONTOS POSITIVOS:\n';
+        texto += '----------------------------------------\n';
+        positivos.forEach((span, i) => {
+            texto += `${i+1}. ${span.textContent}\n`;
+        });
+        
+        texto += '\n⚠️ PONTOS DE ATENÇÃO:\n';
+        texto += '----------------------------------------\n';
+        atencao.forEach((span, i) => {
+            texto += `${i+1}. ${span.textContent}\n`;
+        });
+        
+        texto += '\n========================================\n';
+        texto += `Total de feedbacks: ${positivos.length + atencao.length}\n`;
+        texto += `Gerado em: ${new Date().toLocaleString('pt-BR')}`;
+        
+        // Cria e baixa o arquivo
+        const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `feedbacks_gestores_${new Date().toISOString().slice(0,10)}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        
+        // Feedback visual
+        mostrarToast('📤 Feedbacks exportados com sucesso!');
+    }
+
+    // Função auxiliar para mostrar toast de notificação
+    function mostrarToast(mensagem) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed; bottom: 30px; right: 30px;
+            background: #1a237e; color: white;
+            padding: 15px 25px; border-radius: 10px;
+            font-weight: 600; font-size: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.5s ease;
+        `;
+        toast.textContent = mensagem;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    // ============ INICIALIZA OS CONTADORES DE FEEDBACKS ============
+    // Adicionar ao DOMContentLoaded existente
+    // Substitua a parte de inicialização ou adicione esta linha no final:
+    
+    // Se você já tem um DOMContentLoaded, adicione esta linha dentro dele:
+    // setTimeout(atualizarContadoresFeedbacks, 200);
+
+</script>
+
+</body>
+</html>
