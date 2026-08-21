@@ -988,7 +988,7 @@
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             plugins: {
                 // ============ NOVO: CONFIGURAÇÃO DOS LABELS ============
                 datalabels: {
@@ -999,19 +999,13 @@
                     },
                     anchor: 'end',              // Fixa no topo da barra
                     align: 'end',               // Alinha no final
-                    offset: -10,                // Distância da barra (negativo = dentro)
+                    offset: 20,                // Distância da barra (negativo = dentro)
                     formatter: function(value) {
                         return value > 0 ? value : ''; // Só mostra se > 0
                     }
                 },
                 // ============ FIM DA NOVIDADE ============
-                legend: {
-                    position: 'top',
-                    labels: {
-                        font: { size: 13, weight: '600' },
-                        padding: 20
-                    }
-                }
+
             },
             scales: {
                 y: {
