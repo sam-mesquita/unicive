@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Acompanhamento Cursos EAD (Editável)</title>
@@ -505,7 +504,7 @@
         <div class="header-info">
             <span>📅 Lançamento: 01/06/2026</span>
             <span>📌 Período: Jun - Ago 2026</span>
-            <span>🔄 Atualizado: <span id="dataAtualizacao">21/08/2026</span></span>
+            <span>🔄 Atualizado: <span id="dataAtualizacao">24/08/2026</span></span>
         </div>
     </div>
 
@@ -537,15 +536,15 @@
             <!-- Evolução Mensal Engenharia de Prompt -->
             <div class="input-group">
                 <label>📈 Engenharia de Prompt - Junho</label>
-                <input type="number" id="evolA1" value="0" min="0">
+                <input type="number" id="evolA1" value="1" min="0">
             </div>
             <div class="input-group">
                 <label>📈 Engenharia de Prompt - Julho</label>
-                <input type="number" id="evolA2" value="0" min="0">
+                <input type="number" id="evolA2" value="5" min="0">
             </div>
             <div class="input-group">
                 <label>📈 Engenharia de Prompt - Agosto</label>
-                <input type="number" id="evolA3" value="7" min="0">
+                <input type="number" id="evolA3" value="1" min="0">
             </div>
             <!-- Evolução Mensal Engenharia de Agentes de IA -->
             <div class="input-group">
@@ -554,16 +553,18 @@
             </div>
             <div class="input-group">
                 <label>📈 Engenharia de Agentes de IA - Julho</label>
-                <input type="number" id="evolB2" value="0" min="0">
+                <input type="number" id="evolB2" value="17" min="0">
             </div>
             <div class="input-group">
                 <label>📈 Engenharia de Agentes de IA - Agosto</label>
-                <input type="number" id="evolB3" value="21" min="0">
+                <input type="number" id="evolB3" value="4" min="0">
             </div>
-            <div class="input-group" style="justify-content: flex-end;">
+            <div class="input-group" style="justify-content: flex-end; flex-direction: row; gap: 10px;">
                 <button class="btn-atualizar" onclick="atualizarDashboard()">🔄 Atualizar Dashboard</button>
+                <button class="btn-atualizar" id="btnSalvarArquivo" onclick="salvarAlteracoesNoArquivo()" style="background:#27ae60;">💾 Salvar no Arquivo</button>
             </div>
         </div>
+        <div id="statusSalvamento" style="margin-top:10px; font-size:12px; color:#888;"></div>
     </div>
 
     <!-- ABAS DE NAVEGAÇÃO -->
@@ -595,7 +596,7 @@
         </div>
         <div class="card total">
             <div class="label">💰 Ticket Médio Geral</div>
-            <div class="value" id="cardTicketGeral">R$ 282,61</div>           
+            <div class="value" id="cardTicketGeral">R$ 282.61</div>           
         </div>
         <div class="card destaque">
             <div class="label">📊 Total de Matrículas</div>
@@ -604,16 +605,16 @@
     </div>            
             </div>
         </div>
-    </div>
+    
 
     <!-- GRÁFICO DE BARRAS COMPARATIVO (permanece igual) -->
     <div class="chart-wrapper">
         <h3>📊 Comparativo: Matrículas Totais x Meta</h3>
         <div class="chart-container">
-            <canvas id="chartComparativo"></canvas>
+            <canvas id="chartComparativo" width="1487" height="350" style="display: block; box-sizing: border-box; height: 350px; width: 1487px;"></canvas>
         </div>
     </div>
-</div>
+
 
     <!-- ======================== TELA 2 ======================== -->
     <div id="tab2" class="tab-content">
@@ -621,20 +622,20 @@
             <div class="chart-box">
                 <h4>📈 Engenharia de Prompt - Evolução Mensal</h4>
                 <div class="chart-container">
-                    <canvas id="chartEvolucaoA"></canvas>
+                    <canvas id="chartEvolucaoA" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
                 </div>
             </div>
             <div class="chart-box">
                 <h4>📈 Engenharia de Agentes de IA - Evolução Mensal</h4>
                 <div class="chart-container">
-                    <canvas id="chartEvolucaoB"></canvas>
+                    <canvas id="chartEvolucaoB" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
                 </div>
             </div>
         </div>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:20px;">
             <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
                 <span style="color:#888; font-size:12px; text-transform:uppercase;">Engenharia de Prompt - Variação</span>
-                <div style="font-size:20px; font-weight:700; color:#27ae60;" id="varA">+∞%</div>
+                <div style="font-size:20px; font-weight:700; color:#27ae60;" id="varA">+0%</div>
                 <span style="font-size:13px; color:#666;">Jun (0) → Ago (7)</span>
             </div>
             <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
@@ -644,7 +645,7 @@
             </div>
             <div style="background:white; border-radius:12px; padding:15px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
                 <span style="color:#888; font-size:12px; text-transform:uppercase;">Total de Matrículas</span>
-                <div style="font-size:20px; font-weight:700; color:#1a237e;" id="totalMatEvol">28</div>
+                <div style="font-size:20px; font-weight:700; color:#1a237e;" id="totalMatEvol">5</div>
                 <span style="font-size:13px; color:#666;">Agosto</span>
             </div>
         </div>
@@ -686,8 +687,55 @@
                         </tr>
                     </thead>
                     <tbody id="rankBodyA">
-                        <!-- Gerado via JavaScript -->
-                    </tbody>
+                <tr>
+                    <td class="pos gold">🥇</td>
+                    <td class="Regional-name">Regional Sudeste</td>
+                    <td class="matriculas">3</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos silver">🥈</td>
+                    <td class="Regional-name">Regional Centro</td>
+                    <td class="matriculas">2</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos bronze">🥉</td>
+                    <td class="Regional-name">Regional Sul</td>
+                    <td class="matriculas">1</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">4</td>
+                    <td class="Regional-name">Regional Oeste</td>
+                    <td class="matriculas">1</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">5</td>
+                    <td class="Regional-name">Regional Leste</td>
+                    <td class="matriculas">0</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">6</td>
+                    <td class="Regional-name">Regional Norte</td>
+                    <td class="matriculas">0</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">7</td>
+                    <td class="Regional-name">Regional Nordeste</td>
+                    <td class="matriculas">0</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            </tbody>
                 </table>
             </div>
 
@@ -707,8 +755,55 @@
                         </tr>
                     </thead>
                     <tbody id="rankBodyB">
-                        <!-- Gerado via JavaScript -->
-                    </tbody>
+                <tr>
+                    <td class="pos gold">🥇</td>
+                    <td class="Regional-name">Regional Centro</td>
+                    <td class="matriculas">4</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos silver">🥈</td>
+                    <td class="Regional-name">Regional Sudeste</td>
+                    <td class="matriculas">4</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos bronze">🥉</td>
+                    <td class="Regional-name">Regional Sul</td>
+                    <td class="matriculas">3</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">4</td>
+                    <td class="Regional-name">Regional Norte</td>
+                    <td class="matriculas">3</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">5</td>
+                    <td class="Regional-name">Regional Nordeste</td>
+                    <td class="matriculas">3</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">6</td>
+                    <td class="Regional-name">Regional Leste</td>
+                    <td class="matriculas">2</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            
+                <tr>
+                    <td class="pos ">7</td>
+                    <td class="Regional-name">Regional Oeste</td>
+                    <td class="matriculas">2</td>
+                    <td class="status"><span class="status-badge abaixo">Abaixo da meta</span></td>
+                </tr>
+            </tbody>
                 </table>
             </div>
         </div>
@@ -725,7 +820,7 @@
     <div class="footer">
         Dashboard gerado em 21/08/2026 | Dados sujeitos à validação | Versão 2.0 - Editável
     </div>
-</div>
+
 
 <script>
     // ============ VARIÁVEIS GLOBAIS DOS GRÁFICOS ============
@@ -739,10 +834,8 @@
     function atualizarDashboard() {
         // Lê os valores dos inputs
         const matA = parseInt(document.getElementById('matA').value) || 0;
-        const metaA = parseInt(document.getElementById('metaA').value) || 1;
         const ticketA = parseFloat(document.getElementById('ticketA').value) || 0;
         const matB = parseInt(document.getElementById('matB').value) || 0;
-        const metaB = parseInt(document.getElementById('metaB').value) || 1;
         const ticketB = parseFloat(document.getElementById('ticketB').value) || 0;
 
         const evolA1 = parseInt(document.getElementById('evolA1').value) || 0;
@@ -753,36 +846,17 @@
         const evolB3 = parseInt(document.getElementById('evolB3').value) || 0;
 
         // ============ ATUALIZA CARDS TELA 1 ============
-        const pctA = Math.round((matA / metaA) * 100);
-        const pctB = Math.round((matB / metaB) * 100);
         const totalMat = matA + matB;
-        const metaTotal = metaA + metaB;
-        const pctTotal = Math.round((totalMat / metaTotal) * 100);
         const ticketGeral = totalMat > 0 ? ((ticketA * matA) + (ticketB * matB)) / totalMat : 0;
 
         document.getElementById('cardMatA').textContent = matA;
-        document.getElementById('cardMetaA').textContent = metaA;
-        document.getElementById('cardPctA').textContent = pctA + '%';
-        document.getElementById('cardPctA').style.color = pctA >= 80 ? '#27ae60' : pctA >= 50 ? '#f1c40f' : '#e74c3c';
-
         document.getElementById('cardMatB').textContent = matB;
-        document.getElementById('cardMetaB').textContent = metaB;
-        document.getElementById('cardPctB').textContent = pctB + '%';
-        document.getElementById('cardPctB').style.color = pctB >= 80 ? '#27ae60' : pctB >= 50 ? '#f1c40f' : '#e74c3c';
-
         document.getElementById('cardTotalMat').textContent = totalMat;
-        document.getElementById('cardMetaTotal').textContent = metaTotal;
-        document.getElementById('cardPctTotal').textContent = pctTotal + '%';
-        document.getElementById('cardPctTotal').style.color = pctTotal >= 80 ? '#27ae60' : pctTotal >= 50 ? '#f1c40f' : '#e74c3c';
-
-        document.getElementById('cardTicketA').textContent = ticketA.toFixed(2);
-        document.getElementById('cardTicketB').textContent = ticketB.toFixed(2);
         document.getElementById('cardTicketGeral').textContent = 'R$ ' + ticketGeral.toFixed(2);
 
         // ============ ATUALIZA GRÁFICO TELA 1 ============
         if (chartComparativo) {
             chartComparativo.data.datasets[0].data = [matA, matB];
-            chartComparativo.data.datasets[1].data = [metaA, metaB];
             chartComparativo.update();
         }
 
@@ -1037,6 +1111,110 @@ chartComparativo = new Chart(ctx1, {
         });
     }
 
+    // ============ SALVAR ALTERAÇÕES DIRETAMENTE NO ARQUIVO ============
+    // Guarda a referência (handle) do arquivo já selecionado, para não
+    // precisar pedir de novo a cada clique dentro da mesma sessão.
+    let arquivoHandle = null;
+
+    function abrirBancoHandles() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open('dashboardArquivoDB', 1);
+            req.onupgradeneeded = () => req.result.createObjectStore('handles');
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function salvarHandleNoBanco(handle) {
+        try {
+            const db = await abrirBancoHandles();
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction('handles', 'readwrite');
+                tx.objectStore('handles').put(handle, 'arquivoAtual');
+                tx.oncomplete = resolve;
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (e) { /* segue sem persistir entre sessões */ }
+    }
+
+    async function carregarHandleDoBanco() {
+        try {
+            const db = await abrirBancoHandles();
+            return await new Promise((resolve) => {
+                const tx = db.transaction('handles', 'readonly');
+                const req = tx.objectStore('handles').get('arquivoAtual');
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            });
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function salvarAlteracoesNoArquivo() {
+        const statusEl = document.getElementById('statusSalvamento');
+
+        // Sincroniza o atributo "value" de cada input com o que está digitado
+        // agora, para que os novos números fiquem gravados no HTML como padrão.
+        document.querySelectorAll('.control-panel input[type="number"]').forEach(input => {
+            input.setAttribute('value', input.value);
+        });
+
+        const htmlCompleto = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+        // Navegadores sem suporte à File System Access API (Firefox, Safari):
+        // baixa uma nova cópia do arquivo já com os valores atuais.
+        if (!('showSaveFilePicker' in window)) {
+            const blob = new Blob([htmlCompleto], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'index.html';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            mostrarToast('⬇️ Seu navegador não permite salvar direto. Baixei um novo index.html — substitua o arquivo antigo por ele.');
+            return;
+        }
+
+        try {
+            if (!arquivoHandle) {
+                arquivoHandle = await carregarHandleDoBanco();
+            }
+            if (arquivoHandle) {
+                let permissao = await arquivoHandle.queryPermission({ mode: 'readwrite' });
+                if (permissao !== 'granted') {
+                    permissao = await arquivoHandle.requestPermission({ mode: 'readwrite' });
+                }
+                if (permissao !== 'granted') arquivoHandle = null;
+            }
+            if (!arquivoHandle) {
+                // Na primeira vez, escolha o MESMO arquivo index.html que você
+                // já está usando, para sobrescrevê-lo.
+                arquivoHandle = await window.showSaveFilePicker({
+                    suggestedName: 'index.html',
+                    types: [{ description: 'Arquivo HTML', accept: { 'text/html': ['.html'] } }]
+                });
+                await salvarHandleNoBanco(arquivoHandle);
+            }
+
+            const writable = await arquivoHandle.createWritable();
+            await writable.write(htmlCompleto);
+            await writable.close();
+
+            mostrarToast('💾 Alterações salvas diretamente no arquivo!');
+            if (statusEl) {
+                const agora = new Date();
+                statusEl.textContent = '✅ Último salvamento: ' + agora.toLocaleTimeString('pt-BR');
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error('Erro ao salvar arquivo:', err);
+                mostrarToast('❌ Não foi possível salvar no arquivo.');
+            }
+        }
+    }
+
     // ============ CONTROLE DE ABAS ============
     document.querySelectorAll('.tab-btn').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -1239,5 +1417,6 @@ chartComparativo = new Chart(ctx1, {
 
 </script>
 
-</body>
-</html>
+
+
+</body></html>
