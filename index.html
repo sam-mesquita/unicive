@@ -644,30 +644,37 @@
             </div>
             <!-- Evolução Mensal Engenharia de Prompt -->
             <div class="input-group">
-                <label>📈 Engenharia de Prompt - Junho</label>
+                <label>Engenharia de Prompt - Junho</label>
                 <input type="number" id="evolA1" value="1" min="0">
             </div>
             <div class="input-group">
-                <label>📈 Engenharia de Prompt - Julho</label>
+                <label>Engenharia de Prompt - Julho</label>
                 <input type="number" id="evolA2" value="5" min="0">
             </div>
             <div class="input-group">
-                <label>📈 Engenharia de Prompt - Agosto</label>
+                <label>Engenharia de Prompt - Agosto</label>
                 <input type="number" id="evolA3" value="1" min="0">
             </div>
+             <div class="input-group">
+                <label>Engenharia de Prompt - Setembro</label>
+                <input typ1="number" id="evo1A4" value="0" min="0">
+             </div>
             <!-- Evolução Mensal Engenharia de Agentes de IA -->
             <div class="input-group">
-                <label>📈 Engenharia de Agentes de IA - Junho</label>
+                <label>Engenharia de Agentes de IA - Junho</label>
                 <input type="number" id="evolB1" value="0" min="0">
             </div>
             <div class="input-group">
-                <label>📈 Engenharia de Agentes de IA - Julho</label>
+                <label>Engenharia de Agentes de IA - Julho</label>
                 <input type="number" id="evolB2" value="17" min="0">
             </div>
             <div class="input-group">
-                <label>📈 Engenharia de Agentes de IA - Agosto</label>
+                <label>Engenharia de Agentes de IA - Agosto</label>
                 <input type="number" id="evolB3" value="4" min="0">
             </div>
+            <div class="input-group">
+                <label>Engenharia de Agentes de IA - Setembro</label>
+                <input typ1="number" id="evo1B4" value="0" min="0">
             <div class="input-group" style="justify-content: flex-end; flex-direction: row; gap: 10px;">
                 <button class="btn-atualizar" onclick="atualizarDashboard()">🔄 Atualizar Dashboard</button>
                 <button class="btn-atualizar" id="btnSalvarArquivo" onclick="salvarAlteracoesNoArquivo()" style="background:#27ae60;">💾 Salvar no Arquivo</button>
@@ -924,9 +931,11 @@
         const evolA1 = parseInt(document.getElementById('evolA1').value) || 0;
         const evolA2 = parseInt(document.getElementById('evolA2').value) || 0;
         const evolA3 = parseInt(document.getElementById('evolA3').value) || 0;
+        const evolA4 = parseInt(document.getElementById('evolA4').value) || 0;
         const evolB1 = parseInt(document.getElementById('evolB1').value) || 0;
         const evolB2 = parseInt(document.getElementById('evolB2').value) || 0;
         const evolB3 = parseInt(document.getElementById('evolB3').value) || 0;
+        const evolB4 = parseInt(document.getElementById('evolB4').value) || 0;
 
         // ============ ATUALIZA CARDS TELA 1 ============
         const totalMat = matA + matB;
@@ -944,8 +953,8 @@
         }
 
         // ============ ATUALIZA GRÁFICOS TELA 2 ============
-        const evolA = [evolA1, evolA2, evolA3];
-        const evolB = [evolB1, evolB2, evolB3];
+        const evolA = [evolA1, evolA2, evolA3, evo1A4];
+        const evolB = [evolB1, evolB2, evolB3, evo1B4];
 
         if (chartEvolA) {
             chartEvolA.data.datasets[0].data = evolA;
@@ -958,14 +967,14 @@
         }
 
         // ============ ATUALIZA VARIAÇÃO TELA 2 ============
-        const varA = evolA1 > 0 ? Math.round(((evolA3 - evolA1) / evolA1) * 100) : (evolA3 > 0 ? 999 : 0);
-        const varB = evolB1 > 0 ? Math.round(((evolB3 - evolB1) / evolB1) * 100) : (evolB3 > 0 ? 999 : 0);
+        const varA = evolA1 > 0 ? Math.round(((evolA4 - evolA1) / evolA1) * 100) : (evolA4 > 0 ? 999 : 0);
+        const varB = evolB1 > 0 ? Math.round(((evolB4 - evolB1) / evolB1) * 100) : (evolB4 > 0 ? 999 : 0);
 
         document.getElementById('varA').textContent = varA === 999 ? '+∞%' : (varA >= 0 ? '+' + varA : varA) + '%';
         document.getElementById('varA').style.color = varA >= 0 ? '#27ae60' : '#e74c3c';
         document.getElementById('varB').textContent = varB === 999 ? '+∞%' : (varB >= 0 ? '+' + varB : varB) + '%';
         document.getElementById('varB').style.color = varB >= 0 ? '#27ae60' : '#e74c3c';
-        document.getElementById('totalMatEvol').textContent = evolA3 + evolB3;
+        document.getElementById('totalMatEvol').textContent = evolA4 + evolB4;
 
         // ============ ATUALIZA RANKING TELA 3 ============
         // Distribui as matrículas pelos Regionals (exemplo: distribuição proporcional)
@@ -1110,10 +1119,10 @@ chartComparativo = new Chart(ctx1, {
         chartEvolA = new Chart(ctx2, {
             type: 'line',
             data: {
-                labels: ['Junho', 'Julho', 'Agosto'],
+                labels: ['Junho', 'Julho', 'Agosto', 'Setembro'],
                 datasets: [{
                     label: 'Engenharia de Prompt',
-                    data: [0, 0, 7],
+                    data: [0, 0, 7, 0],
                     borderColor: '#1a237e',
                     backgroundColor: 'rgba(26, 35, 126, 0.1)',
                     fill: true,
@@ -1158,10 +1167,10 @@ chartComparativo = new Chart(ctx1, {
         chartEvolB = new Chart(ctx3, {
             type: 'line',
             data: {
-                labels: ['Junho', 'Julho', 'Agosto'],
+                labels: ['Junho', 'Julho', 'Agosto', 'Setembro'],
                 datasets: [{
                     label: 'Engenharia de Agentes de IA',
-                    data: [0, 0, 21],
+                    data: [0, 0, 21, 0],
                     borderColor: '#e67e22',
                     backgroundColor: 'rgba(230, 126, 34, 0.1)',
                     fill: true,
